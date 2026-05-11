@@ -13,7 +13,7 @@ engine = create_engine(
     connect_args={"check_same_thread": False}
 )
 
-Session = sessionmaker(autoocmmit=False, autoflush=False, bind=engine)
+Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Base(DeclarativeBase):
     pass    
