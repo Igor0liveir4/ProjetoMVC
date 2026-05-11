@@ -5,7 +5,7 @@
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import HTTPException, status
+from fastapi import Request, HTTPException, status
 from dotenv import load_dotenv
 import os
 
@@ -66,3 +66,9 @@ def get_usuario_logado(request: Request):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido"
         )
+    
+def get_usuario_opcional(request: Request):
+    try:
+        return get_usuario_logado(request)
+    except HTTPException:
+        return None
