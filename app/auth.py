@@ -31,7 +31,7 @@ def criar_token(data: dict):
     payload = data.copy()
 
     # Define o tempo de expiração do token
-    expira = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expira = datetime.now(timezone.utc) + timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
     payload
 
     # Criar o token JWT
