@@ -351,6 +351,10 @@
     <h1>Fazer <span>Login</span></h1>
     <p class="subtitle">Entre com suas credenciais para continuar</p>
 
+    {% if request.query_params.get("cadastro") == "ok"%}
+    <p style="color: green;"> Cadastro realizado! Faça login</p>
+    {% endif %}
+
     <form action="/auth/login" method="post">
         <div class="field">
             <label for="email">Email</label>
