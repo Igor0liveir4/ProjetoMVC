@@ -13,7 +13,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.movimentacao import Movimentacao, TipoMovimentacao
+from app.models.movimentacao import Movimentacao, Tipo_de_movimentacao
 from app.models.produto import Produto
 from app.auth import get_usuario_logado, get_admin
 
@@ -89,7 +89,7 @@ def form_nova_movimentacao(
             "usuario":    usuario,
             "produtos":   produtos,
             "produto_id": produto_id,
-            "tipos":      TipoMovimentacao,  # passa o enum para o template
+            "tipos":      Tipo_de_movimentacao,  # passa o enum para o template
         }
     )
 
@@ -115,7 +115,7 @@ def registrar_movimentacao(
     produtos = db.query(Produto).filter(Produto.ativo == True).all()
 
     # Valida se o tipo enviado é válido
-    if tipo not in (TipoMovimentacao.ENTRADA, TipoMovimentacao.SAIDA):
+    if tipo not in (Tipo_de_movimentacao.ENTRADA, Tipo_de_movimentacao.SAIDA):
         return templates.TemplateResponse(
             request,
             "movimentacoes/form.html",
@@ -124,7 +124,7 @@ def registrar_movimentacao(
                 "usuario":    usuario,
                 "produtos":   produtos,
                 "produto_id": produto_id,
-                "tipos":      TipoMovimentacao,
+                "tipos":      Tipo_de_movimentacao,
                 "erro":       "Tipo de movimentação inválido.",
             },
             status_code=400
@@ -139,7 +139,7 @@ def registrar_movimentacao(
                 "usuario":    usuario,
                 "produtos":   produtos,
                 "produto_id": produto_id,
-                "tipos":      TipoMovimentacao,
+                "tipos":      Tipo_de_movimentacao,
                 "erro":       "A quantidade deve ser maior que zero.",
             },
             status_code=400
@@ -156,7 +156,7 @@ def registrar_movimentacao(
         return RedirectResponse(url="/movimentacoes/nova", status_code=302)
 
     # Impede saída maior que o estoque disponível
-    if tipo == TipoMovimentacao.SAIDA and quantidade > produto.estoque_atual:
+    if tipo == Tipo_de_movimentacao.SAIDA and quantidade > produto.estoque_atual:
         return templates.TemplateResponse(
             request,
             "movimentacoes/form.html",
@@ -165,7 +165,7 @@ def registrar_movimentacao(
                 "usuario":    usuario,
                 "produtos":   produtos,
                 "produto_id": produto_id,
-                "tipos":      TipoMovimentacao,
+                "tipos":      Tipo_de_movimentacao,
                 "erro": (
                     f"Estoque insuficiente. "
                     f"Disponível: {produto.estoque_atual} unidade(s)."
@@ -177,7 +177,7 @@ def registrar_movimentacao(
     # ----------------------------------------------------------
     # Atualiza o estoque do produto
     # ----------------------------------------------------------
-    if tipo == TipoMovimentacao.ENTRADA:
+    if tipo == Tipo_de_movimentacao.ENTRADA:
         produto.estoque_atual += quantidade
     else:
         produto.estoque_atual -= quantidade
@@ -233,11 +233,11 @@ def historico_produto(
     # Resumo calculado em Python a partir do histórico
     total_entradas = sum(
         m.quantidade for m in movimentacoes
-        if m.tipo == TipoMovimentacao.ENTRADA
+        if m.tipo == Tipo_de_movimentacao.ENTRADA
     )
     total_saidas = sum(
         m.quantidade for m in movimentacoes
-        if m.tipo == TipoMovimentacao.SAIDA
+        if m.tipo == Tipo_de_movimentacao.SAIDA
     )
 
     return templates.TemplateResponse(
